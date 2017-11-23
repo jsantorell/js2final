@@ -10,7 +10,7 @@
     "url": "git://github.com/jsantorell/js2final.git"
   },
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node server"
   },
   "dependencies": {
     "body-parser": "*",

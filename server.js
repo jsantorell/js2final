@@ -1,0 +1,197 @@
+#!/usr/bin/env node
+var dbRef;
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('finaljs2:server');
+var http = require('http');
+var mysql = require('mysql');
+var firebase = require("firebase");
+
+
+// Initialize Firebase
+// TODO: Replace with your project's customized code snippet
+var config = {
+    apiKey: "AIzaSyCIRYOf4h2vabmcOtgPbSOBk3mUXyYHr8Q",
+    authDomain: "callcenterperformancemonitor.firebaseapp.com",
+    databaseURL: "https://callcenterperformancemonitor.firebaseio.com",
+    projectId: "callcenterperformancemonitor",
+    storageBucket: "callcenterperformancemonitor.appspot.com",
+    messagingSenderId: "984897765127"
+};
+firebase.initializeApp(config);
+dbRef = firebase.database().ref('/');
+
+
+
+var idPlacementSales = 0;
+var idPlacementCalls = 0;
+var idPlacementReps = 0;
+
+setInterval(function () {
+    salesFromMysql();
+}, 5000);
+
+
+
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '8080');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
+
+    if (port >= 0) {
+        // port number
+        return port;
+    }
+
+    return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    var bind = typeof port === 'string'
+            ? 'Pipe ' + port
+            : 'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+            ? 'pipe ' + addr
+            : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+}
+
+
+function mysqlConnection() {
+
+    var con = mysql.createConnection({
+        connectionLimit: 100,
+        host: '160.153.56.167',
+        port: 3306,
+        user: 'j2Admin',
+        password: '12LUCky1212!!',
+        database: 'j2_final_db'
+    });
+
+    return con;
+
+}
+
+
+function salesFromMysql() {
+    var con = mysqlConnection();
+    con.connect(function (err) {
+        if (err)
+            throw err;
+        con.query("SELECT * FROM Sales", function (err, result, fields) {
+            if (err)
+                throw err;
+            for (var i in result) {
+                if (parseInt(result[i].sale_id) > (idPlacementSales + 1)) {
+                    var sale = {
+                        id: result[i].sale_id,
+                        saleType: result[i].sale_type,
+                        saleDate: result[i].sale_date.toString(),
+                        rep_id: result[i].rep_id
+                    };
+                    dbRef.child('sales').push(sale);
+                    idPlacementSales = result[i].sale_id;
+                }
+            }
+        });
+        con.query("SELECT * FROM Calls", function (err, result, fields) {
+            if (err)
+                throw err;
+            for (var i in result) {
+                if (parseInt(result[i].call_id) > idPlacementCalls) {
+                    var call = {
+                        id: result[i].call_id,
+                        timeStarted: result[i].time_started.toString(),
+                        timeEnded: result[i].time_ended.toString(),
+                        rep_id: result[i].rep_id
+                    };
+                    dbRef.child('calls').push(call);
+                    idPlacementCalls = result[i].call_id;
+                }
+            }
+        });
+                con.query("SELECT * FROM Reps", function (err, result, fields) {
+            if (err)
+                throw err;
+            for (var i in result) {
+                if (parseInt(result[i].rep_id) > idPlacementReps) {
+                    var rep = {
+                        id: result[i].rep_id,
+                        name: result[i].rep_name
+                    };
+                    dbRef.child('reps').push(rep);
+                    idPlacementReps = result[i].rep_id;
+                }
+            }
+        });
+        con.end();
+    });
+}
+
+
+
+
+
+
