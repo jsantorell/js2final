@@ -22,7 +22,7 @@
     "serve-favicon": "*",
     "firebase": "*",
     "mysql": "*",
-    "everyauth": "https://github.com/jsantorell/js2final.git",
+    "everyauth": "https://github.com/jsantorell/js2final.git"
   }
 }
 
