@@ -30,7 +30,7 @@ $.when(
         var btn = $('<button>').text('X').click(removeTodo);
 
         li.append(btn);
-        $('#salesLeaderBoard').append(li);
+        $('#callsLeaderBoard').append(li);
     }
 
 //remove from db
