@@ -11,11 +11,8 @@
   "dependencies": {
     "body-parser": "*",
     "cookie-parser": "*",
-    "debug": "*",
     "express": "*",
     "jade": "*",
-    "morgan": "*",
-    "serve-favicon": "*",
     "firebase": "*",
     "mysql": "*",
     "everyauth": "https://github.com/jsantorell/js2final.git"
