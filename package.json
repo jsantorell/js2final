@@ -5,17 +5,24 @@
 "engines": {
     "node": "8.9.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jsantorell/js2final.git"
+  },
   "scripts": {
-    "start": "node bin\/www"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "body-parser": "*",
     "cookie-parser": "*",
+    "debug": "*",
     "express": "*",
     "jade": "*",
+    "morgan": "*",
+    "serve-favicon": "*",
     "firebase": "*",
     "mysql": "*",
-    "everyauth": "https://github.com/jsantorell/js2final.git"
+    "everyauth": "https://github.com/jsantorell/js2final.git",
   }
 }
 
